@@ -1,8 +1,8 @@
 import styled from 'styled-components/native';
 import colors from '../colors';
 import { Dimensions } from 'react-native';
-import { useStopwatch } from 'react-timer-hook';
 import { Ionicons } from '@expo/vector-icons';
+import TimerSubject from '../components/TimerSubject';
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,19 +12,20 @@ const Container = styled.View`
   align-items: center;
 `;
 
-const Timer = styled.View`
+const SafeBox = styled.SafeAreaView`
   background-color: ${colors.blue};
   width: ${width}px;
-  height: ${height * 0.3}px;
+`;
+
+const Timer = styled.View`
   justify-content: center;
-  padding: 0 20px;
+  padding: 20px;
 `;
 
 const TimerText = styled.Text`
   font-size: 24px;
   color: ${colors.gray};
-  font-family: 'NotoSans';
-  margin: 10px 0;
+  font-weight: 700;
 `;
 
 const Time = styled.Text`
@@ -32,38 +33,57 @@ const Time = styled.Text`
   color: white;
   font-family: 'Jua';
   text-align: center;
+  margin: 10px 0;
 `;
 
-const TimerButton = styled.Pressable`
-  margin: 0 auto;
+const ScrollView = styled.ScrollView``;
+
+const SubjectContainer = styled.View`
+  width: ${width}px;
+  padding: 5px 20px;
 `;
+
+const Subject = styled.View`
+  flex-direction: row;
+  background-color: ${colors.lightBlue};
+  border-radius: 10px;
+  padding: 20px;
+  align-items: center;
+  margin: 5px 0;
+`;
+
+const SubjectTitle = styled.Text`
+  font-size: 24px;
+  font-weight: 700;
+  flex-grow: 1;
+`;
+
+const SubjectTime = styled.Text`
+  font-size: 24px;
+  font-family: 'Jua';
+  margin-right: 20px;
+`;
+
+const StartButton = styled.Pressable``;
 
 const TimerScreen = () => {
-  const { seconds, minutes, hours, isRunning, start, pause } = useStopwatch({
-    autoStart: false,
-  });
-
-  const formatTime = (value: number) => {
-    return String(value).padStart(2, '0');
-  };
-
   return (
     <Container>
-      <Timer>
-        <TimerText>현재 순공부 시간:</TimerText>
-        <Time>
-          {formatTime(hours)}:{formatTime(minutes)}:{formatTime(seconds)}
-        </Time>
-        {isRunning ? (
-          <TimerButton onPress={pause}>
-            <Ionicons name="pause" size={36} color="white" />
-          </TimerButton>
-        ) : (
-          <TimerButton onPress={start}>
-            <Ionicons name="play" size={36} color="white" />
-          </TimerButton>
-        )}
-      </Timer>
+      <SafeBox>
+        <Timer>
+          <TimerText>금일 순공 시간:</TimerText>
+          <Time>00:00:00</Time>
+        </Timer>
+      </SafeBox>
+      <ScrollView>
+        <SubjectContainer>
+          <TimerSubject title="국어" time="00:00:00" />
+          <TimerSubject title="수학" time="00:00:00" />
+          <TimerSubject title="영어" time="00:00:00" />
+          <TimerSubject title="한국사" time="00:00:00" />
+          <TimerSubject title="탐구" time="00:00:00" />
+        </SubjectContainer>
+      </ScrollView>
     </Container>
   );
 };
