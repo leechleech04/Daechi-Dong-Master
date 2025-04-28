@@ -1,8 +1,10 @@
 import styled from 'styled-components/native';
 import colors from '../colors';
-import { Dimensions } from 'react-native';
+import { Dimensions, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import TimerSubject from '../components/TimerSubject';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types';
 
 const { width, height } = Dimensions.get('window');
 
@@ -36,37 +38,37 @@ const Time = styled.Text`
   margin: 10px 0;
 `;
 
-const ScrollView = styled.ScrollView``;
-
 const SubjectContainer = styled.View`
   width: ${width}px;
   padding: 5px 20px;
 `;
 
-const Subject = styled.View`
+const AddSubjectBtn = styled.Pressable`
   flex-direction: row;
-  background-color: ${colors.lightBlue};
-  border-radius: 10px;
-  padding: 20px;
+  background-color: ${colors.gray};
+  justify-content: center;
   align-items: center;
+  border-radius: 10px;
   margin: 5px 0;
+  padding: 10px;
 `;
 
-const SubjectTitle = styled.Text`
-  font-size: 24px;
-  font-weight: 700;
-  flex-grow: 1;
+const AddSubjectText = styled.Text`
+  font-size: 20px;
+  font-weight: 600;
+  margin-right: 10px;
 `;
 
-const SubjectTime = styled.Text`
-  font-size: 24px;
-  font-family: 'Jua';
-  margin-right: 20px;
-`;
+type TimerScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'TimerScreen'
+>;
 
-const StartButton = styled.Pressable``;
+type TimerScreenProps = {
+  navigation: TimerScreenNavigationProp;
+};
 
-const TimerScreen = () => {
+const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
   return (
     <Container>
       <SafeBox>
@@ -81,7 +83,19 @@ const TimerScreen = () => {
           <TimerSubject title="수학" time="00:00:00" />
           <TimerSubject title="영어" time="00:00:00" />
           <TimerSubject title="한국사" time="00:00:00" />
-          <TimerSubject title="탐구" time="00:00:00" />
+          <TimerSubject title="탐구1" time="00:00:00" />
+          <TimerSubject title="탐구2" time="00:00:00" />
+          <TimerSubject title="탐구3" time="00:00:00" />
+          <TimerSubject title="탐구4" time="00:00:00" />
+          <TimerSubject title="제2외국어" time="00:00:00" />
+          <AddSubjectBtn
+            onPress={() => {
+              navigate('AddSubjectScreen');
+            }}
+          >
+            <AddSubjectText>과목 추가하기</AddSubjectText>
+            <Ionicons name="add" size={20} color="black" />
+          </AddSubjectBtn>
         </SubjectContainer>
       </ScrollView>
     </Container>

@@ -6,6 +6,7 @@ import SettingScreen from '../screens/SettingScreen';
 import ClassScreen from '../screens/ClassScreen';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../colors';
+import TimerStacks from './TimerStacks';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,7 +24,7 @@ const Tabs = () => {
     >
       <Tab.Screen
         name="Timer"
-        component={TimerScreen}
+        component={TimerStacks}
         options={{
           title: '타이머',
           tabBarIcon: ({ color, size, focused }) => (

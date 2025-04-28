@@ -11,16 +11,20 @@ const Subject = styled.View`
   margin: 5px 0;
 `;
 
+const TitleContainer = styled.View`
+  flex: 1;
+`;
+
 const SubjectTitle = styled.Text`
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   flex-grow: 1;
 `;
 
 const SubjectTime = styled.Text`
-  font-size: 24px;
+  font-size: 20px;
   font-family: 'Jua';
-  margin-right: 20px;
+  margin: 0 20px;
 `;
 
 const StartButton = styled.Pressable``;
@@ -28,10 +32,14 @@ const StartButton = styled.Pressable``;
 const TimerSubject = ({ title, time }: { title: string; time: string }) => {
   return (
     <Subject>
-      <SubjectTitle>{title}</SubjectTitle>
+      <TitleContainer>
+        <SubjectTitle numberOfLines={1} ellipsizeMode="tail">
+          {title}
+        </SubjectTitle>
+      </TitleContainer>
       <SubjectTime>{time}</SubjectTime>
       <StartButton>
-        <Ionicons name="play" size={24} color="black" />
+        <Ionicons name="play" size={20} color="black" />
       </StartButton>
     </Subject>
   );
