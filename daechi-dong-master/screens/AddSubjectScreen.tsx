@@ -3,6 +3,7 @@ import colors from '../colors';
 import { useState } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Container = styled.View`
   background-color: ${colors.beige};
@@ -25,6 +26,8 @@ const SubjectNameInput = styled.TextInput`
   border-radius: 10px;
   margin-bottom: 30px;
   align-self: stretch;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  elevation: 5;
 `;
 
 const BtnBox = styled.View`
@@ -64,7 +67,20 @@ const AddSubjectScreen = ({
   navigation: { goBack },
 }: AddSubjectScreenProps) => {
   const [subjectName, setSubjectName] = useState<string>('');
-  console.log(subjectName);
+
+  const storeSubject = async () => {
+    try {
+      const existingSubjects = await AsyncStorage.getItem('subjects');
+      const subjects = existingSubjects ? JSON.parse(existingSubjects) : [];
+      subjects.push({
+        name: subjectName,
+        time: '00:00:00',
+      });
+      await AsyncStorage.setItem('subjects', JSON.stringify(subjects));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Container>
@@ -85,7 +101,12 @@ const AddSubjectScreen = ({
         </CancelBtn>
         <AddBtn
           onPress={() => {
-            goBack();
+            if (subjectName.trim() === '') {
+            } else {
+              storeSubject();
+              setSubjectName('');
+              goBack();
+            }
           }}
         >
           <BtnText>추가</BtnText>

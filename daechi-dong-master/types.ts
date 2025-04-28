@@ -3,3 +3,8 @@ export type RootStackParamList = {
   AddSubjectScreen: undefined;
   // 다른 화면들도 여기에 추가하세요
 };
+
+export interface Subject {
+  name: string;
+  time: string;
+}

@@ -4,9 +4,12 @@ import { Dimensions, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import TimerSubject from '../components/TimerSubject';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types';
+import { RootStackParamList, Subject } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const Container = styled.View`
   flex: 1;
@@ -69,6 +72,25 @@ type TimerScreenProps = {
 };
 
 const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const getSubjects = async () => {
+        try {
+          const storedSubjects = await AsyncStorage.getItem('subjects');
+          if (storedSubjects) {
+            setSubjects(JSON.parse(storedSubjects));
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      getSubjects();
+    }, [subjects])
+  );
+
   return (
     <Container>
       <SafeBox>
@@ -79,15 +101,13 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
       </SafeBox>
       <ScrollView>
         <SubjectContainer>
-          <TimerSubject title="국어" time="00:00:00" />
-          <TimerSubject title="수학" time="00:00:00" />
-          <TimerSubject title="영어" time="00:00:00" />
-          <TimerSubject title="한국사" time="00:00:00" />
-          <TimerSubject title="탐구1" time="00:00:00" />
-          <TimerSubject title="탐구2" time="00:00:00" />
-          <TimerSubject title="탐구3" time="00:00:00" />
-          <TimerSubject title="탐구4" time="00:00:00" />
-          <TimerSubject title="제2외국어" time="00:00:00" />
+          {subjects.map((subject, index) => (
+            <TimerSubject
+              key={index}
+              title={subject.name}
+              time={subject.time}
+            />
+          ))}
           <AddSubjectBtn
             onPress={() => {
               navigate('AddSubjectScreen');
