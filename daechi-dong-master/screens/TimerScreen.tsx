@@ -91,6 +91,8 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
     }, [subjects])
   );
 
+  const [isScrollEnabled, setIsScrollEnabled] = useState(true);
+
   return (
     <Container>
       <SafeBox>
@@ -99,13 +101,19 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
           <Time>00:00:00</Time>
         </Timer>
       </SafeBox>
-      <ScrollView>
+      <ScrollView scrollEnabled={isScrollEnabled}>
         <SubjectContainer>
           {subjects.map((subject, index) => (
             <TimerSubject
               key={index}
               title={subject.name}
               time={subject.time}
+              onDragStart={() => {
+                setIsScrollEnabled(false);
+              }}
+              onDragEnd={() => {
+                setIsScrollEnabled(true);
+              }}
             />
           ))}
           <AddSubjectBtn
