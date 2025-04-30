@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
 const Container = styled.View`
   background-color: ${colors.beige};
@@ -77,7 +78,7 @@ const AddSubjectScreen = ({
           (subject: { name: string }) => subject.name === subjectName
         )
       ) {
-        alert('이미 존재하는 과목입니다.');
+        Alert.alert('중복', '이미 존재하는 과목입니다.', [{ text: '확인' }]);
         return;
       }
       subjects.push({

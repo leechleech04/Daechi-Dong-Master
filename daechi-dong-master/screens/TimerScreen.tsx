@@ -122,7 +122,7 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
             }}
           >
             <AddSubjectText>과목 추가하기</AddSubjectText>
-            <Ionicons name="add" sze={20} color="black" />
+            <Ionicons name="add" size={20} color="black" />
           </AddSubjectBtn>
         </SubjectContainer>
       </ScrollView>
