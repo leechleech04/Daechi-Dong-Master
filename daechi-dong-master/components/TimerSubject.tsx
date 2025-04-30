@@ -3,6 +3,10 @@ import colors from '../colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, PanResponder } from 'react-native';
+import { Dimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const { width } = Dimensions.get('window');
 
 const Container = styled(Animated.View)`
   flex-direction: row;
@@ -124,6 +128,32 @@ const TimerSubject = ({
     })
   ).current;
 
+  const deleteSubject = async () => {
+    try {
+      const storedSubjects = await AsyncStorage.getItem('subjects');
+      if (storedSubjects) {
+        const subjects = JSON.parse(storedSubjects);
+        const updatedSubjects = subjects.filter(
+          (subject: { name: string }) => subject.name !== title
+        );
+        await AsyncStorage.setItem('subjects', JSON.stringify(updatedSubjects));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteSubject = () => {
+    Animated.timing(locateAnimation, {
+      toValue: width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    setTimeout(() => {
+      deleteSubject();
+    }, 300);
+  };
+
   return (
     <Container
       style={{
@@ -142,8 +172,8 @@ const TimerSubject = ({
           <Ionicons name="play" size={20} color="black" />
         </StartBtn>
       </Subject>
-      <DeleteBtn>
-        <Ionicons name="trash" size={20} color="black" />
+      <DeleteBtn onPress={handleDeleteSubject}>
+        <Ionicons name="trash" size={20} color="white" />
       </DeleteBtn>
     </Container>
   );
