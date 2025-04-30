@@ -3,6 +3,7 @@ import Tabs from './navigations/Tabs';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { useAssets } from 'expo-asset';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -12,9 +13,11 @@ const App = () => {
     NotoSans: require('./assets/fonts/NotoSansKR-VariableFont_wght.ttf'),
   });
 
+  const [assetsLoaded] = useAssets([require('./assets/logo.png')]);
+
   useEffect(() => {
     const prepare = async () => {
-      if (fontsLoaded) {
+      if (fontsLoaded && assetsLoaded) {
         await SplashScreen.hideAsync();
       }
     };
@@ -22,7 +25,7 @@ const App = () => {
     prepare();
   });
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || !assetsLoaded) {
     return null;
   }
 

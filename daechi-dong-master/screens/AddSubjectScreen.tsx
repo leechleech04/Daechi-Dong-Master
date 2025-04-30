@@ -51,7 +51,7 @@ const CancelBtn = styled(Btn)`
 `;
 
 const AddBtn = styled(Btn)`
-  background-color: ${colors.blue};
+  background-color: ${colors.lightBlue};
 `;
 
 type AddSubjectScreenNavigationProp = NativeStackNavigationProp<

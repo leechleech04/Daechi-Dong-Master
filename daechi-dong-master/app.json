@@ -4,7 +4,7 @@
     "slug": "daechi-dong-master",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -32,6 +32,12 @@
             "./assets/fonts/Jua-Regular.ttf",
             "./assets/fonts/NotoSansKR-VariableFont_wght.ttf"
           ]
+        }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/images/logo.png"]
         }
       ]
     ]
