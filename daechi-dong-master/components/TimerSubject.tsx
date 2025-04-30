@@ -1,12 +1,17 @@
 import styled from 'styled-components/native';
 import colors from '../colors';
 import { Ionicons } from '@expo/vector-icons';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, PanResponder } from 'react-native';
 
-const Subject = styled(Animated.View)`
+const Container = styled(Animated.View)`
+  flex-direction: row;
+`;
+
+const Subject = styled.View`
   background-color: ${colors.lightBlue};
   border-radius: 10px;
+  flex: 1;
   flex-direction: row;
   padding: 20px;
   align-items: center;
@@ -29,7 +34,16 @@ const SubjectTime = styled.Text`
   margin: 0 20px;
 `;
 
-const StartButton = styled.Pressable``;
+const StartBtn = styled.Pressable``;
+
+const DeleteBtn = styled.Pressable`
+  position: absolute;
+  right: -80;
+  align-self: center;
+  background-color: ${colors.red};
+  padding: 20px;
+  border-radius: 10px;
+`;
 
 const TimerSubject = ({
   title,
@@ -44,54 +58,94 @@ const TimerSubject = ({
 }) => {
   const locateAnimation = useRef(new Animated.Value(0)).current;
 
-  const colorAnimation = locateAnimation.interpolate({
-    inputRange: [-200, 0, 200],
-    outputRange: ['#f38181', colors.lightBlue, '#f38181'],
-    extrapolate: 'clamp',
-  });
+  const [isDragged, setIsDragged] = useState(false);
+  const isDraggedRef = useRef(isDragged);
+  useEffect(() => {
+    isDraggedRef.current = isDragged;
+  }, [isDragged]);
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: (_, { dx, dy }) => {
+        return Math.abs(dx) > Math.abs(dy);
+      },
+      onMoveShouldSetPanResponder: (_, { dx, dy }) => {
+        return Math.abs(dx) > Math.abs(dy);
+      },
       onPanResponderGrant: () => {
         onDragStart();
       },
       onPanResponderMove: (_, { dx }) => {
-        locateAnimation.setValue(dx);
+        if (isDraggedRef.current) {
+          locateAnimation.setValue(-80 + dx);
+        } else {
+          if (dx < 0) {
+            locateAnimation.setValue(dx);
+          }
+        }
       },
       onPanResponderRelease: (_, { dx }) => {
-        if (Math.abs(dx) > 200) {
-          // 과목 삭제하는 모달 창
+        if (isDraggedRef.current) {
+          if (dx > 0) {
+            Animated.spring(locateAnimation, {
+              toValue: 0,
+              useNativeDriver: true,
+              bounciness: 10,
+            }).start();
+            setIsDragged(false);
+          } else {
+            Animated.spring(locateAnimation, {
+              toValue: -80,
+              useNativeDriver: true,
+              bounciness: 10,
+            }).start();
+            setIsDragged(true);
+          }
         } else {
-          Animated.spring(locateAnimation, {
-            toValue: 0,
-            useNativeDriver: true,
-            bounciness: 10,
-          }).start();
+          if (dx < -80) {
+            Animated.spring(locateAnimation, {
+              toValue: -80,
+              useNativeDriver: true,
+              bounciness: 10,
+            }).start();
+            setIsDragged(true);
+          } else {
+            Animated.spring(locateAnimation, {
+              toValue: 0,
+              useNativeDriver: true,
+              bounciness: 10,
+            }).start();
+            setIsDragged(false);
+          }
         }
+
         onDragEnd();
       },
     })
   ).current;
 
   return (
-    <Subject
+    <Container
       style={{
         transform: [{ translateX: locateAnimation }],
-        backgroundColor: colorAnimation,
       }}
       {...panResponder.panHandlers}
     >
-      <TitleContainer>
-        <SubjectTitle numberOfLines={1} ellipsizeMode="tail">
-          {title}
-        </SubjectTitle>
-      </TitleContainer>
-      <SubjectTime>{time}</SubjectTime>
-      <StartButton>
-        <Ionicons name="play" size={20} color="black" />
-      </StartButton>
-    </Subject>
+      <Subject>
+        <TitleContainer>
+          <SubjectTitle numberOfLines={1} ellipsizeMode="tail">
+            {title}
+          </SubjectTitle>
+        </TitleContainer>
+        <SubjectTime>{time}</SubjectTime>
+        <StartBtn>
+          <Ionicons name="play" size={20} color="black" />
+        </StartBtn>
+      </Subject>
+      <DeleteBtn>
+        <Ionicons name="trash" size={20} color="black" />
+      </DeleteBtn>
+    </Container>
   );
 };
 
