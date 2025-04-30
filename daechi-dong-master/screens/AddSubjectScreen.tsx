@@ -72,6 +72,14 @@ const AddSubjectScreen = ({
     try {
       const existingSubjects = await AsyncStorage.getItem('subjects');
       const subjects = existingSubjects ? JSON.parse(existingSubjects) : [];
+      if (
+        subjects.some(
+          (subject: { name: string }) => subject.name === subjectName
+        )
+      ) {
+        alert('이미 존재하는 과목입니다.');
+        return;
+      }
       subjects.push({
         name: subjectName,
         time: '00:00:00',

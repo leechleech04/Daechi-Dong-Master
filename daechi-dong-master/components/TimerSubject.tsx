@@ -137,6 +137,10 @@ const TimerSubject = ({
           (subject: { name: string }) => subject.name !== title
         );
         await AsyncStorage.setItem('subjects', JSON.stringify(updatedSubjects));
+        setIsDragged(false);
+        setTimeout(() => {
+          locateAnimation.setValue(0);
+        }, 300);
       }
     } catch (error) {
       console.error(error);

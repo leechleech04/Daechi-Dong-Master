@@ -74,19 +74,19 @@ type TimerScreenProps = {
 const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
 
+  const getSubjects = async () => {
+    try {
+      const storedSubjects = await AsyncStorage.getItem('subjects');
+      if (storedSubjects) {
+        setSubjects(JSON.parse(storedSubjects));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const getSubjects = async () => {
-        try {
-          const storedSubjects = await AsyncStorage.getItem('subjects');
-          if (storedSubjects) {
-            setSubjects(JSON.parse(storedSubjects));
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
       getSubjects();
     }, [subjects])
   );
@@ -122,7 +122,7 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
             }}
           >
             <AddSubjectText>과목 추가하기</AddSubjectText>
-            <Ionicons name="add" size={20} color="black" />
+            <Ionicons name="add" sze={20} color="black" />
           </AddSubjectBtn>
         </SubjectContainer>
       </ScrollView>
