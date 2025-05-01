@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, PanResponder } from 'react-native';
 import { Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import StopWatch from './StopWatch';
 
 const { width } = Dimensions.get('window');
 
@@ -32,14 +33,6 @@ const SubjectTitle = styled.Text`
   flex-grow: 1;
 `;
 
-const SubjectTime = styled.Text`
-  font-size: 20px;
-  font-family: 'Jua';
-  margin: 0 20px;
-`;
-
-const StartBtn = styled.Pressable``;
-
 const DeleteBtn = styled.Pressable`
   position: absolute;
   right: -80;
@@ -56,7 +49,7 @@ const TimerSubject = ({
   onDragEnd,
 }: {
   title: string;
-  time: string;
+  time: number;
   onDragStart: () => void;
   onDragEnd: () => void;
 }) => {
@@ -138,9 +131,7 @@ const TimerSubject = ({
         );
         await AsyncStorage.setItem('subjects', JSON.stringify(updatedSubjects));
         setIsDragged(false);
-        setTimeout(() => {
-          locateAnimation.setValue(0);
-        }, 300);
+        locateAnimation.setValue(0);
       }
     } catch (error) {
       console.error(error);
@@ -171,10 +162,7 @@ const TimerSubject = ({
             {title}
           </SubjectTitle>
         </TitleContainer>
-        <SubjectTime>{time}</SubjectTime>
-        <StartBtn>
-          <Ionicons name="play" size={20} color="black" />
-        </StartBtn>
+        <StopWatch subjectName={title} />
       </Subject>
       <DeleteBtn onPress={handleDeleteSubject}>
         <Ionicons name="trash" size={20} color="white" />

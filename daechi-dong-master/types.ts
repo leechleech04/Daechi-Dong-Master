@@ -6,5 +6,5 @@ export type RootStackParamList = {
 
 export interface Subject {
   name: string;
-  time: string;
+  time: number;
 }

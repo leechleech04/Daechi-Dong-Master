@@ -103,9 +103,9 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
       </SafeBox>
       <ScrollView scrollEnabled={isScrollEnabled}>
         <SubjectContainer>
-          {subjects.map((subject, index) => (
+          {subjects.map((subject) => (
             <TimerSubject
-              key={index}
+              key={subject.name}
               title={subject.name}
               time={subject.time}
               onDragStart={() => {

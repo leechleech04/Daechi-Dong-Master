@@ -1,0 +1,108 @@
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import styled from 'styled-components/native';
+import { Ionicons } from '@expo/vector-icons';
+
+const Container = styled.View`
+  flex-direction: row;
+`;
+
+const SubjectTime = styled.Text`
+  font-size: 20px;
+  font-family: 'Jua';
+  margin: 0 20px;
+`;
+
+const Button = styled.Pressable``;
+
+const StopWatch = ({ subjectName }: { subjectName: string }) => {
+  const [seconds, setSeconds] = useState<number>(0);
+  const [isActive, setIsActive] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadStoredTime = async () => {
+      try {
+        const storedSubjects = await AsyncStorage.getItem('subjects');
+        if (storedSubjects) {
+          const subjects = JSON.parse(storedSubjects);
+          const subject = subjects.find(
+            (subject: { name: string }) => subject.name === subjectName
+          );
+          if (subject) {
+            setSeconds(subject.time);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadStoredTime();
+  }, []);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isActive) {
+      interval = setInterval(() => {
+        setSeconds((prev) => prev + 1);
+      }, 1000);
+    } else if (!isActive && seconds !== 0) {
+      clearInterval(interval!);
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isActive, seconds]);
+
+  const handleStartStop = async () => {
+    if (isActive) {
+      try {
+        const existingSubjects = await AsyncStorage.getItem('subjects');
+        const subjects = existingSubjects ? JSON.parse(existingSubjects) : [];
+        const subject = subjects.find(
+          (subject: { name: string }) => subject.name === subjectName
+        );
+        if (subject) {
+          const updatedSubjects = subjects.map(
+            (sub: { name: string; time: number }) =>
+              sub.name === subjectName ? { name: sub.name, time: seconds } : sub
+          );
+          await AsyncStorage.setItem(
+            'subjects',
+            JSON.stringify(updatedSubjects)
+          );
+          console.log('updated!');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    setIsActive(!isActive);
+  };
+
+  const formatTime = (time: number) => {
+    const hours: number = Math.floor(time / 3600);
+    const minutes: number | string = Math.floor((time - hours * 3600) / 60);
+    const seconds: number | string = time - hours * 3600 - minutes * 60;
+
+    const hoursStr: string = hours < 10 ? '0' + hours : String(hours);
+    const minutesStr: string = minutes < 10 ? '0' + minutes : String(minutes);
+    const secondStr: string = seconds < 10 ? '0' + seconds : String(seconds);
+
+    return `${hoursStr}:${minutesStr}:${secondStr}`;
+  };
+
+  return (
+    <Container>
+      <SubjectTime>{formatTime(seconds)}</SubjectTime>
+      <Button onPress={handleStartStop}>
+        <Ionicons name={isActive ? 'pause' : 'play'} size={20} color="black" />
+      </Button>
+    </Container>
+  );
+};
+
+export default StopWatch;

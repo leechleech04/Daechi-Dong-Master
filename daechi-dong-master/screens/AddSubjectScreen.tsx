@@ -83,7 +83,7 @@ const AddSubjectScreen = ({
       }
       subjects.push({
         name: subjectName,
-        time: '00:00:00',
+        time: 0,
       });
       await AsyncStorage.setItem('subjects', JSON.stringify(subjects));
     } catch (error) {
