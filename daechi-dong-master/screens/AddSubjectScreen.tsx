@@ -71,21 +71,21 @@ const AddSubjectScreen = ({
 
   const storeSubject = async () => {
     try {
-      const existingSubjects = await AsyncStorage.getItem('subjects');
-      const subjects = existingSubjects ? JSON.parse(existingSubjects) : [];
+      const storedSubjects = await AsyncStorage.getItem('subjects');
+      const parsedSubjects = storedSubjects ? JSON.parse(storedSubjects) : [];
       if (
-        subjects.some(
+        parsedSubjects.some(
           (subject: { name: string }) => subject.name === subjectName
         )
       ) {
         Alert.alert('중복', '이미 존재하는 과목입니다.', [{ text: '확인' }]);
         return;
       }
-      subjects.push({
+      parsedSubjects.push({
         name: subjectName,
         time: 0,
       });
-      await AsyncStorage.setItem('subjects', JSON.stringify(subjects));
+      await AsyncStorage.setItem('subjects', JSON.stringify(parsedSubjects));
     } catch (error) {
       console.error(error);
     }

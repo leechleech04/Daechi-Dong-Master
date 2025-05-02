@@ -24,8 +24,8 @@ const StopWatch = ({ subjectName }: { subjectName: string }) => {
       try {
         const storedSubjects = await AsyncStorage.getItem('subjects');
         if (storedSubjects) {
-          const subjects = JSON.parse(storedSubjects);
-          const subject = subjects.find(
+          const parsedSubjects = JSON.parse(storedSubjects);
+          const subject = parsedSubjects.find(
             (subject: { name: string }) => subject.name === subjectName
           );
           if (subject) {
@@ -59,13 +59,13 @@ const StopWatch = ({ subjectName }: { subjectName: string }) => {
   const handleStartStop = async () => {
     if (isActive) {
       try {
-        const existingSubjects = await AsyncStorage.getItem('subjects');
-        const subjects = existingSubjects ? JSON.parse(existingSubjects) : [];
-        const subject = subjects.find(
+        const storedSubjects = await AsyncStorage.getItem('subjects');
+        const parsedSubjects = storedSubjects ? JSON.parse(storedSubjects) : [];
+        const subject = parsedSubjects.find(
           (subject: { name: string }) => subject.name === subjectName
         );
         if (subject) {
-          const updatedSubjects = subjects.map(
+          const updatedSubjects = parsedSubjects.map(
             (sub: { name: string; time: number }) =>
               sub.name === subjectName ? { name: sub.name, time: seconds } : sub
           );
@@ -73,7 +73,6 @@ const StopWatch = ({ subjectName }: { subjectName: string }) => {
             'subjects',
             JSON.stringify(updatedSubjects)
           );
-          console.log('updated!');
         }
       } catch (error) {
         console.error(error);

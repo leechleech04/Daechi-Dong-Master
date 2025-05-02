@@ -107,7 +107,6 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
             <TimerSubject
               key={subject.name}
               title={subject.name}
-              time={subject.time}
               onDragStart={() => {
                 setIsScrollEnabled(false);
               }}

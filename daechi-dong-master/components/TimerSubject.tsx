@@ -44,16 +44,14 @@ const DeleteBtn = styled.Pressable`
 
 const TimerSubject = ({
   title,
-  time,
   onDragStart,
   onDragEnd,
 }: {
   title: string;
-  time: number;
   onDragStart: () => void;
   onDragEnd: () => void;
 }) => {
-  const locateAnimation = useRef(new Animated.Value(0)).current;
+  const subjectLocation = useRef(new Animated.Value(0)).current;
 
   const [isDragged, setIsDragged] = useState(false);
   const isDraggedRef = useRef(isDragged);
@@ -74,44 +72,28 @@ const TimerSubject = ({
       },
       onPanResponderMove: (_, { dx }) => {
         if (isDraggedRef.current) {
-          locateAnimation.setValue(-80 + dx);
+          subjectLocation.setValue(-80 + dx);
         } else {
           if (dx < 0) {
-            locateAnimation.setValue(dx);
+            subjectLocation.setValue(dx);
           }
         }
       },
       onPanResponderRelease: (_, { dx }) => {
         if (isDraggedRef.current) {
           if (dx > 0) {
-            Animated.spring(locateAnimation, {
-              toValue: 0,
-              useNativeDriver: true,
-              bounciness: 10,
-            }).start();
+            fixSubjectLocation(0);
             setIsDragged(false);
           } else {
-            Animated.spring(locateAnimation, {
-              toValue: -80,
-              useNativeDriver: true,
-              bounciness: 10,
-            }).start();
+            fixSubjectLocation(-80);
             setIsDragged(true);
           }
         } else {
           if (dx < -80) {
-            Animated.spring(locateAnimation, {
-              toValue: -80,
-              useNativeDriver: true,
-              bounciness: 10,
-            }).start();
+            fixSubjectLocation(-80);
             setIsDragged(true);
           } else {
-            Animated.spring(locateAnimation, {
-              toValue: 0,
-              useNativeDriver: true,
-              bounciness: 10,
-            }).start();
+            fixSubjectLocation(0);
             setIsDragged(false);
           }
         }
@@ -121,17 +103,25 @@ const TimerSubject = ({
     })
   ).current;
 
+  const fixSubjectLocation = (location: number) => {
+    Animated.spring(subjectLocation, {
+      toValue: location,
+      useNativeDriver: true,
+      bounciness: 10,
+    }).start();
+  };
+
   const deleteSubject = async () => {
     try {
       const storedSubjects = await AsyncStorage.getItem('subjects');
       if (storedSubjects) {
-        const subjects = JSON.parse(storedSubjects);
-        const updatedSubjects = subjects.filter(
+        const parsedSubjects = JSON.parse(storedSubjects);
+        const updatedSubjects = parsedSubjects.filter(
           (subject: { name: string }) => subject.name !== title
         );
         await AsyncStorage.setItem('subjects', JSON.stringify(updatedSubjects));
         setIsDragged(false);
-        locateAnimation.setValue(0);
+        subjectLocation.setValue(0);
       }
     } catch (error) {
       console.error(error);
@@ -139,7 +129,7 @@ const TimerSubject = ({
   };
 
   const handleDeleteSubject = () => {
-    Animated.timing(locateAnimation, {
+    Animated.timing(subjectLocation, {
       toValue: width,
       duration: 300,
       useNativeDriver: true,
@@ -152,7 +142,7 @@ const TimerSubject = ({
   return (
     <Container
       style={{
-        transform: [{ translateX: locateAnimation }],
+        transform: [{ translateX: subjectLocation }],
       }}
       {...panResponder.panHandlers}
     >
