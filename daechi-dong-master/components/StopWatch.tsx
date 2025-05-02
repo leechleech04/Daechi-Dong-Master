@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { toggleTimerActive } from '../redux/isTimerActiveSlice';
 
 const Container = styled.View`
   flex-direction: row;
@@ -16,6 +19,9 @@ const SubjectTime = styled.Text`
 const Button = styled.Pressable``;
 
 const StopWatch = ({ subjectName }: { subjectName: string }) => {
+  const isTimerActive = useSelector((state: RootState) => state.isTimerActive);
+  const dispatch = useDispatch();
+
   const [seconds, setSeconds] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
 
@@ -57,6 +63,9 @@ const StopWatch = ({ subjectName }: { subjectName: string }) => {
   }, [isActive, seconds]);
 
   const handleStartStop = async () => {
+    if (isTimerActive && !isActive) {
+      return;
+    }
     if (isActive) {
       try {
         const storedSubjects = await AsyncStorage.getItem('subjects');
@@ -77,6 +86,7 @@ const StopWatch = ({ subjectName }: { subjectName: string }) => {
       } catch (error) {
         console.error(error);
       }
+      dispatch(toggleTimerActive());
     }
 
     setIsActive(!isActive);

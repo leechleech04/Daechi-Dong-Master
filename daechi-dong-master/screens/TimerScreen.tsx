@@ -8,6 +8,8 @@ import { RootStackParamList, Subject } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 const { width } = Dimensions.get('window');
 
@@ -91,7 +93,7 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
     }, [subjects])
   );
 
-  const [isScrollEnabled, setIsScrollEnabled] = useState(true);
+  const [isScrollEnabled, setIsScrollEnabled] = useState<boolean>(true);
 
   return (
     <Container>

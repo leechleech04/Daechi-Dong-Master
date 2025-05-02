@@ -4,6 +4,8 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { useAssets } from 'expo-asset';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,9 +32,11 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
-      <Tabs />
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Tabs />
+      </NavigationContainer>
+    </Provider>
   );
 };
 
