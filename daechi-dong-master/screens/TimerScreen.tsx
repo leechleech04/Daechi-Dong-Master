@@ -6,10 +6,11 @@ import TimerSubject from '../components/TimerSubject';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, Subject } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../store';
+import { formatTime } from '../utils';
 
 const { width } = Dimensions.get('window');
 
@@ -74,6 +75,26 @@ type TimerScreenProps = {
 };
 
 const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
+  const [seconds, setSeconds] = useState<number>(0);
+  useEffect(() => {
+    const createTimerStorage = async () => {
+      try {
+        const timer = await AsyncStorage.getItem('timer');
+        if (!timer) {
+          await AsyncStorage.setItem('timer', JSON.stringify({ time: 0 }));
+          setSeconds(0);
+        } else {
+          const parsedTimer = JSON.parse(timer);
+          setSeconds(parsedTimer.time);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    createTimerStorage();
+  }, []);
+
   const [subjects, setSubjects] = useState<Subject[]>([]);
 
   const getSubjects = async () => {
@@ -95,12 +116,41 @@ const TimerScreen = ({ navigation: { navigate } }: TimerScreenProps) => {
 
   const [isScrollEnabled, setIsScrollEnabled] = useState<boolean>(true);
 
+  const isTimerActive = useSelector((state: RootState) => state.isTimerActive);
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isTimerActive) {
+      interval = setInterval(() => {
+        setSeconds((prev) => prev + 1);
+      }, 1000);
+    } else {
+      const storeTimer = async () => {
+        try {
+          await AsyncStorage.setItem(
+            'timer',
+            JSON.stringify({ time: seconds })
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      storeTimer();
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isTimerActive]);
+
   return (
     <Container>
       <SafeBox>
         <Timer>
           <TimerText>금일 순공 시간:</TimerText>
-          <Time>00:00:00</Time>
+          <Time>{formatTime(seconds)}</Time>
         </Timer>
       </SafeBox>
       <ScrollView scrollEnabled={isScrollEnabled}>
